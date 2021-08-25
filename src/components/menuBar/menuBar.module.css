@@ -1,0 +1,19 @@
+.menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  height: 3em;
+  margin: auto;
+  border-bottom: 1px solid black;
+}
+
+.menu_item {
+  width: 4em;
+  height: 2em;
+  margin: 0 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 2em;
+}

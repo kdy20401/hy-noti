@@ -1,0 +1,26 @@
+@value hyPurple from '/src/common/colors.module.css';
+
+#navbar {
+  display: flex;
+  justify-content: space-between;
+  height: 4em;
+  background-color: hyPurple;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  width: 15%;
+}
+
+.right_menu {
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right_menu_img {
+  object-fit: cover;
+  width: 100%;
+}

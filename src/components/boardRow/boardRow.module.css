@@ -1,0 +1,24 @@
+.row {
+  display: flex;
+  align-items: center;
+  width: 90%;
+  height: 3em;
+  border-bottom: 1px solid black;
+  margin: auto;
+}
+
+.title, .published, .view {
+  text-align: center;
+}
+
+.title {
+  flex-basis: 70%;
+}
+
+.published {
+  flex-basis: 15%;
+}
+
+.view {
+  flex-basis: 15%;
+}
