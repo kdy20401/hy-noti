@@ -3,7 +3,7 @@ const axios = require('axios')
 class APIService {
   axiosInst = axios.create({
     // baseURL: 'http://52.79.145.5:8080/',
-    timeout:1000
+    // timeout:1000
   })
 
   async getAllPortalNotice(){

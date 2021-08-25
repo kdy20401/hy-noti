@@ -1,0 +1,27 @@
+@value hyBlack from '/src/common/colors.module.css';
+
+.categorys {
+  display: flex;
+  margin: auto;
+  justify-content: space-between;
+  margin-bottom: 1em;
+  padding: 0.4em;
+  height: 2em;
+}
+
+.btn_container {
+  display: flex;
+  justify-content: center;
+
+}
+
+.btn_container:hover {
+  cursor: pointer;
+  border-bottom: solid 2px hyBlack;
+}
+
+.category_btn {
+  background-color: transparent;
+  border: none;
+  /* border-left: solid 1px hyBlack; */
+}
