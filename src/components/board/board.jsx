@@ -4,8 +4,7 @@ import BoardRow from '../boardRow/boardRow';
 import BoardCategory from '../boardCategory/boardCategory';
 import { useParams } from 'react-router-dom';
 
-const Board = ({list, onCategorySelect}) => {
-  const categorys=['all', 'haksa', 'admission', 'employment', 'startup']
+const Board = ({list, categorys, onCategorySelect}) => {
   return (
     <div>
       <BoardCategory categorys={categorys} onCategorySelect={onCategorySelect}/>

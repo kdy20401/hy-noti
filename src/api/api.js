@@ -6,9 +6,9 @@ class APIService {
     // timeout:1000
   })
 
-  async getAllPortalNotice(){
+  async getAllNotice(section){
     try {
-      const items = await this.axiosInst.get('notice/portal')
+      const items = await this.axiosInst.get(`notice/${section}`)
       return items.data
     } catch(error) {
       console.log(error)
@@ -16,7 +16,7 @@ class APIService {
     }
   }
 
-  async getPortalNoticeWithCategory(category) {
+  async getNoticeWithCategory(section, category) {
     // 학사: haksa
     // 입학 : admission
     // 취업 : employment
@@ -29,7 +29,7 @@ class APIService {
     // 행사안내 : event
 
     try {
-      const items = await this.axiosInst.get(`notice/portal/${category}`)
+      const items = await this.axiosInst.get(`notice/${section}/${category}`)
       return items.data
     } catch (error) {
       console.log(error)

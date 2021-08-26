@@ -1,4 +1,4 @@
-@value hyBlack from '/src/common/colors.module.css';
+@value hyPurple, hyBlack from '/src/common/colors.module.css';
 
 .categorys {
   display: flex;
@@ -15,13 +15,16 @@
 
 }
 
-.btn_container:hover {
+.category_btn {
+  background-color: transparent;
+  border: none;
+}
+
+.category_btn:hover {
   cursor: pointer;
   border-bottom: solid 2px hyBlack;
 }
 
-.category_btn {
-  background-color: transparent;
-  border: none;
-  /* border-left: solid 1px hyBlack; */
+.category_btn.selected {
+  background-color: hyPurple;
 }
