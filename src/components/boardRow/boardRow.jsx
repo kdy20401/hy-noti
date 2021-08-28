@@ -8,7 +8,7 @@ const BoardRow = ({info}) => {
 
   return (
     <>
-    <div className={styles.row} onClick={() => {setIsToggled(isToggled ? false : true)}}>
+    <div className={`${styles.row} ${isToggled && styles.toggled}`} onClick={() => {setIsToggled(isToggled ? false : true)}}>
       <div className={styles.title}>{title}</div>
       <div className={styles.published}>{published}</div>
       <div className={styles.viewCount}>{viewCount}</div>

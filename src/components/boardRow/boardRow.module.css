@@ -1,10 +1,21 @@
+@value hyMainThemeOpa30 from '/src/common/colors.module.css';
+
 .row {
   display: flex;
   align-items: center;
   width: 90%;
   height: 3em;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   margin: auto;
+}
+
+.row:hover {
+  cursor: pointer;
+  background-color: hyMainThemeOpa30;
+}
+
+.row.toggled {
+  background-color: hyMainThemeOpa30;
 }
 
 .title, .published, .view {

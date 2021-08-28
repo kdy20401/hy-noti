@@ -9,10 +9,10 @@ const Navbar = (props) => {
     <nav id={styles.navbar}>
       <div className={styles.logo}>logo</div>
       <div className={styles.menu}>
-        <button onClick={() => {history.push('/notice')}}>
+        <button className={styles.menu_btn} onClick={() => {history.push('/notice')}}>
           <h1 className={styles.menu_item}>Notice</h1>
         </button>
-        <button onClick={()=>{history.push('/board')}}>
+        <button className={styles.menu_btn} onClick={()=>{history.push('/board')}}>
           <h1 className={styles.menu_item}>Board</h1>
         </button>
       </div>
