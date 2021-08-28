@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styles from './boardRow.module.css'
+import ReactHtmlParser from 'react-html-parser'
 
 const BoardRow = ({info}) => {
   const [isToggled, setIsToggled] = useState(false)
-  const {title, published, viewCount} = info
+  const {title, published, viewCount, content} = info
 
   return (
     <>
@@ -12,7 +13,7 @@ const BoardRow = ({info}) => {
       <div className={styles.published}>{published}</div>
       <div className={styles.viewCount}>{viewCount}</div>
     </div>
-    {isToggled && <div><h1>toggle</h1></div>}
+    {isToggled && <div>{ReactHtmlParser(content)}</div>}
     </>
   );
 }
