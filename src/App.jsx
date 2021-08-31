@@ -47,7 +47,7 @@ function App() {
 
   function handleSectionSelect(s) {
     const sectionEng = sectionToEng[s]
-    api.getAllNotice(s)
+    api.getAllNotice(sectionEng)
     .then(items => setInfoList(items))
   }
 

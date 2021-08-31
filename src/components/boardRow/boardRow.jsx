@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styles from './boardRow.module.css'
-import ReactHtmlParser from 'react-html-parser'
+import ReactHtmlParser, { convertNodeToElement } from 'react-html-parser'
 import { useMediaQuery } from 'react-responsive';
 
 const BoardRow = ({info, isToggled, onToggle}) => {
-  // const [isToggled, setIsToggled] = useState(false)
   const {_id, title, writer, date, content} = info
   const isTabletOrMobile = useMediaQuery({query: '(max-width: 1024px)'})
 
-  function handleToggling(id) {
+  function handleToggling() {
     onToggle(_id)
   }
 
@@ -20,6 +19,17 @@ const BoardRow = ({info, isToggled, onToggle}) => {
     return d.slice(2, 10)
   }
 
+  function transformContentImg(node, index) {
+    if (node.name === 'img'){
+      const src = node.attribs.src
+      node.attribs = {
+        src:src,
+        width:'100%'
+      }
+      return convertNodeToElement(node, index, transformContentImg)
+    }
+  }
+
   return (
     <div className={styles.row_container}>
       <div className={`${styles.row} ${isToggled && styles.toggled}`} onClick={handleToggling}>
@@ -29,7 +39,7 @@ const BoardRow = ({info, isToggled, onToggle}) => {
           <div className={styles.date}>{handleDate(date)}</div>
         </div>
       </div>
-      {isToggled && <div className={styles.content}>{ReactHtmlParser(content)}</div>}
+      {isToggled && <div className={styles.content}>{ReactHtmlParser(content, {transform: transformContentImg})}</div>}
     </div> 
   );
 }
