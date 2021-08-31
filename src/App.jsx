@@ -30,28 +30,34 @@ const sectionToEng={
 }
 
 function App() {
-  const [section, setSection] = useState('portal')
   const [infoList, setInfoList] = useState([])
+  const section = useRef('portal')
   const mounted = useRef(false)
   let categoryList = ['전체', '학사', '입학', '취업', '창업']
+  let sectionList = ['포털', '컴소', '경영', '기계']
 
   useEffect(() => {
-    api.getAllNotice(section)
-    .then(items => setInfoList(items))    
-  }, [section])
+    if (!mounted.current) {
+      api.getAllNotice(section.current)
+      .then(items => setInfoList(items))    
 
-  function handleSectionSelect(section) {
-    const sectionEng = sectionToEng[section]
-    setSection(sectionEng)
+      mounted.current = true
+    }
+  })
+
+  function handleSectionSelect(s) {
+    const sectionEng = sectionToEng[s]
+    api.getAllNotice(s)
+    .then(items => setInfoList(items))
   }
 
-  function handleCategorySelect(category) {
-    const categoryEng = categoryToEng[category]
+  function handleCategorySelect(c) {
+    const categoryEng = categoryToEng[c]
     if (categoryEng === 'all') {
-      api.getAllNotice(section)
+      api.getAllNotice(section.current)
       .then(items => setInfoList(items))
     } else {
-      api.getNoticeWithCategory(section, categoryEng)
+      api.getNoticeWithCategory(section.current, categoryEng)
       .then(items => setInfoList(items))
     }
   }
@@ -66,10 +72,10 @@ function App() {
           <Redirect to='/notice'/>
         </Route>
         <Route exact path='/notice'>
-          <MenuBar onSectionSelect={handleSectionSelect}/>
+          <MenuBar sectionList={sectionList} onSectionSelect={handleSectionSelect}/>
           <div className={styles.container}>
             <SearchBar/>
-            <Board list={infoList} categorys={categoryList} onCategorySelect={handleCategorySelect}/>
+            <Board list={infoList} categoryList={categoryList} onCategorySelect={handleCategorySelect}/>
           </div>
         </Route>
         <Route exact path='/board'>
