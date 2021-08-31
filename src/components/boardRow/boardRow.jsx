@@ -3,10 +3,14 @@ import styles from './boardRow.module.css'
 import ReactHtmlParser from 'react-html-parser'
 import { useMediaQuery } from 'react-responsive';
 
-const BoardRow = ({info}) => {
-  const [isToggled, setIsToggled] = useState(false)
-  const {title, writer, date, content} = info
+const BoardRow = ({info, isToggled, onToggle}) => {
+  // const [isToggled, setIsToggled] = useState(false)
+  const {_id, title, writer, date, content} = info
   const isTabletOrMobile = useMediaQuery({query: '(max-width: 1024px)'})
+
+  function handleToggling(id) {
+    onToggle(_id)
+  }
 
   function handleWriter(w) {
     return w.split('/')[0]
@@ -18,7 +22,7 @@ const BoardRow = ({info}) => {
 
   return (
     <div className={styles.row_container}>
-      <div className={`${styles.row} ${isToggled && styles.toggled}`} onClick={() => {setIsToggled(isToggled ? false : true)}}>
+      <div className={`${styles.row} ${isToggled && styles.toggled}`} onClick={handleToggling}>
         <div className={styles.title}>{title}</div>
         <div className={`${styles.metadata} ${isTabletOrMobile && styles.tablet_mobile}`}>
           <div className={styles.writer}>{handleWriter(writer)}</div>
