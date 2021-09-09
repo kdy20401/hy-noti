@@ -57,6 +57,10 @@
   width: 100%;
 }
 
+.file_container {
+  padding: 1em 0.4em;
+}
+
 @media screen and (max-width: 1024px) {
   .title {
     width: 100%;

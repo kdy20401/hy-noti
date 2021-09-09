@@ -4,7 +4,8 @@ import ReactHtmlParser, { convertNodeToElement } from 'react-html-parser'
 import { useMediaQuery } from 'react-responsive';
 
 const BoardRow = ({info, isToggled, onToggle}) => {
-  const {_id, title, writer, date, content} = info
+  const {_id, title, writer, date, content, file: fileLink} = info
+  const fileName = fileLink.split('/').pop()
   const isTabletOrMobile = useMediaQuery({query: '(max-width: 1024px)'})
 
   function handleToggling() {
@@ -39,7 +40,13 @@ const BoardRow = ({info, isToggled, onToggle}) => {
           <div className={styles.date}>{handleDate(date)}</div>
         </div>
       </div>
-      {isToggled && <div className={styles.content}>{ReactHtmlParser(content, {transform: transformContentImg})}</div>}
+      {
+        isToggled && 
+        <div className={styles.content}>
+          {ReactHtmlParser(content, {transform: transformContentImg})}
+          {fileLink && <div className={styles.file_container}><a href={fileLink}>{fileName}</a></div>}
+        </div>
+      }
     </div> 
   );
 }
