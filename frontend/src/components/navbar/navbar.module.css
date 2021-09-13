@@ -1,0 +1,36 @@
+@value hyMainTheme from '/src/common/colors.module.css';
+
+#navbar {
+  display: flex;
+  justify-content: space-between;
+  height: 4em;
+  background-color: hyMainTheme;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  width: 15%;
+}
+
+.menu_btn {
+  background-color: transparent;
+  border: none;
+}
+
+.menu_btn:hover {
+  cursor: pointer;
+  color: white;
+}
+
+.right_menu {
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right_menu_img {
+  object-fit: cover;
+  width: 100%;
+}

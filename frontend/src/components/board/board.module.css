@@ -1,0 +1,7 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 2px 4px gray;
+  margin-top: 1em;
+  background-color: white;
+}
