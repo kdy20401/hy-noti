@@ -1,15 +1,17 @@
 import os, sys, time, boto3
 from datetime import datetime
+
+# mongodb
 from pymongo import MongoClient, ASCENDING
 from pymongo.errors import DuplicateKeyError
+
+# crawling
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException
-from db import insert_db
-from error import panic
 
 
 # global variables
@@ -19,7 +21,71 @@ downloadPath = os.getcwd() + '/download'
 userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'
 
 
+def send_email(msg):
+    import smtplib
+    from email.mime.text import MIMEText
+
+    identifier = sys.argv[1]
+    password = sys.argv[2]
+    emailAddress = '{}@naver.com'.format(identifier)
+    
+    server = smtplib.SMTP_SSL('smtp.naver.com', 465)
+    server.login(emailAddress, password)
+    
+    email = MIMEText("PANIC: unexpected error at '{}'".format(msg))
+    email['Subject'] = 'HYnoti'
+    email['From'] = emailAddress
+    email['To'] = emailAddress
+    server.sendmail(emailAddress, emailAddress, email.as_string())
+    server.quit()
+
+
+def panic(func):
+    global driver
+
+    driver.quit()
+    send_email(func)
+    sys.exit(0)
+
+
+def save_portal_notice(category, title, writer, date, content, files):
+    from db import connect_db
+
+    global driver
+
+    client, collection = connect_db('portal')
+    fileLinks = str()
+    
+    # for example, fileLinks = 'a.pdf|b.pdf|c.hwp' or ''
+    for name in files:
+        fileLinks += 'https://hynotifile.s3.ap-northeast-2.amazonaws.com/portal/{}/{}|'.format(title, name)
+    fileLinks = fileLinks[:-1]
+        
+    # save a notice data to mongodb
+    try:
+        collection.insert_one({
+            'category': category,
+            'title': title,
+            'writer': writer,
+            'date': date,
+            'content': str(content),
+            'file': fileLinks
+        })
+    except DuplicateKeyError:
+        # exception which is not an error
+        print('the data has already been saved! stop crawling..')
+        client.close()
+        driver.quit()
+        raise DuplicateKeyError('duplicate document')
+    except:
+        client.close()
+        panic('save_portal_notice')
+
+    client.close()
+
+
 def upload_file(title, fileNum):
+    import botocore
     global downloadPath, driver
     
     # notice has no attached files
@@ -29,14 +95,10 @@ def upload_file(title, fileNum):
     fileNames = set()
     
     # check all files are downloaded to local
-    try:
-        while len(fileNames) != fileNum:
-            for file in os.scandir(downloadPath):
-                fileNames.add(file.name)
-            time.sleep(1)
-    except:
-        # maybe caused by storage shortage
-        panic('portal', 'upload_file', driver)
+    while len(fileNames) != fileNum:
+        for file in os.scandir(downloadPath):
+            fileNames.add(file.name)
+        time.sleep(1)
 
     # upload files to aws s3
     s3 = boto3.client('s3')
@@ -47,11 +109,15 @@ def upload_file(title, fileNum):
         
         try:
             s3.upload_file(filePath, bucket, objectName)
+        except botocore.exceptions.ClientError:
+            for file in os.scandir(downloadPath):
+                os.remove(file.path)
+            panic('upload_file(due to ClientError)')
         except:
             # before close program, remove files from local
             for file in os.scandir(downloadPath):
                 os.remove(file.path)
-            panic('portal', 'upload_file', driver)
+            panic('upload_file')
     
     # remove files from local
     for file in os.scandir(downloadPath):
@@ -68,7 +134,7 @@ def get_notice_body(bsObj):
         content = bsObj.select_one('td#contents')
         files = bsObj.select('#detail > tbody > tr:last-child > td > div')
     except:
-        panic('portal', 'get_notice_body', driver)
+        panic('get_notice_body')
 
     # download all attached files by clicking them
     if files:
@@ -91,7 +157,7 @@ def get_notice_header(bsObj):
         name = bsObj.select_one('td > #name').get_text()
         date = bsObj.select_one('#insertDate').get_text()
     except:
-        panic('portal', 'parse_notice_head', driver)
+        panic('parse_notice_head')
 
     writer = department + ' / ' + name
     arr = date.strip().split('.')
@@ -110,7 +176,7 @@ def wait_until_notices_appear(second, element, location):
         WebDriverWait(driver, second).until(EC.presence_of_element_located((element, location)))
     except TimeoutException:
         # if panic function is called, increase the seconds
-        panic('portal', 'wait_until_notices_appear', driver)
+        panic('wait_until_notices_appear')
 
 
 def wait_until_files_loaded(second, element, location):
@@ -167,7 +233,7 @@ def crawl():
             # save files to aws s3 
             fileNames = upload_file(title, fileNum)
             # save notice information including file links to db
-            insert_db('portal', category, title, writer, date, content, fileNames, driver)
+            save_portal_notice(category, title, writer, date, content, fileNames)
 
             # return to the page
             driver.find_element_by_xpath('//*[@id="btn_list"]').click()
@@ -182,10 +248,16 @@ def handle_password_change_recommendation_page():
     pass
 
 
+def submit_selfcheck():
+    for num in range(37, 43):
+        driver.find_element_by_xpath('//*[@id="c{}_b"]'.format(num)).click()
+    driver.find_element_by_xpath('//*[@id="btn_confirm"]').click()
+    
+    
 def handle_alert():
     try:
         WebDriverWait(driver, 5).until(EC.alert_is_present())
-    except:
+    except TimeoutException:
         pass
     else:
         driver.switch_to.alert.dismiss()
@@ -202,12 +274,10 @@ def handle_covid19_selfcheck():
     except UnexpectedAlertPresentException:
         handle_alert()
     except:
-        panic('portal', 'handle_covid19_selfcheck', driver)
+        panic('handle_covid19_selfcheck')
     else:
-        # submit self check
-        for num in range(37, 43):
-            driver.find_element_by_xpath('//*[@id="c{}_b"]'.format(num)).click()
-        driver.find_element_by_xpath('//*[@id="btn_confirm"]').click()
+        submit_selfcheck()
+        handle_alert()
 
         
 def login():
@@ -235,7 +305,7 @@ def handle_course_registration_popup():
     try:
         popup = driver.find_element_by_id('pop_po_sugang')
     except:
-        panic('portal', 'handle_course_registration_popup', driver)
+        panic('handle_course_registration_popup')
     else:
         style = popup.get_attribute('style')
         # pop up is visible
@@ -249,7 +319,7 @@ def handle_covid19_page():
     try:
         button = driver.find_element_by_xpath('/html/body/div[1]/p')
     except:
-        panic('portal', 'handle_covid19_page', driver)
+        panic('handle_covid19_page')
     else:
         button.click()        
     
@@ -299,14 +369,14 @@ def crawl_portal_notice():
         set_chromedriver()
     except:
         # when exception occurs inside set_chromedriver()
-        panic('portal', 'set_chromedriver', driver)
+        panic('set_chromedriver')
     
     # second, enter to portal notice page
     try:
         enter_portal_notice()
     except:
         # when exception not handled by try-except in enter_portal_notice() occurs 
-        panic('portal', 'enter_portal_notice', driver)
+        panic('enter_portal_notice')
     
     # third, get notice information up to 5 pages
     try:
@@ -316,7 +386,7 @@ def crawl_portal_notice():
         pass
     except:
         # when exception not handled by try-except in crawl() occurs 
-        panic('portal', 'crawl', driver)
+        panic('crawl')
         
     print('crawl_portal_notice fin')
 

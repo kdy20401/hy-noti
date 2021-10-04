@@ -1,27 +1,28 @@
 from apscheduler.schedulers.background import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
-from cse import crawl_cse_notice
 from portal import crawl_portal_notice
 from db import truncate_db_all
 
 
-def crawl_hanyang_notice():
+def job():
     try:
-        # crawl_cse_notice()
         crawl_portal_notice()
     except SystemExit:
         pass
-    print('crawl_hanyang_notice fin')
+
+
+# truncate all board notices (ex. portal, cse, bs,,)
+def job1():
+    truncate_db_all()
+
 
 scheduler = BlockingScheduler()
+# first at 8:00, last at 18:00
+t1 = CronTrigger(day_of_week='mon-fri', hour='8-18', timezone='Asia/Seoul')
+t2 = CronTrigger(day_of_week='mon-fri', hour='19', timezone='Asia/Seoul')
 
-# t1 = CronTrigger(day_of_week='sat-sun', hour='11-16', minute='*/30', timezone='Asia/Seoul')
-# t2 = CronTrigger(day_of_week='fri', minute='*/10', timezone='Asia/Seoul')
-t1 = CronTrigger(day_of_week='mon-fri', hour='7-17', minute='*/30', timezone='Asia/Seoul')
-t2 = CronTrigger(day_of_week='mon-fri', hour='18', timezone='Asia/Seoul')
-
-scheduler.add_job(crawl_hanyang_notice, trigger=t1)
-scheduler.add_job(truncate_db_all, trigger=t2)
+scheduler.add_job(job, trigger=t1)
+scheduler.add_job(job1, trigger=t2)
 
 print('crawler running,,,,')
 scheduler.start()

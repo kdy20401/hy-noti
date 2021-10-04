@@ -16,5 +16,5 @@ urlpatterns = [
     path('normal/', PortalNoticeNormalListAPI.as_view()),
     path('research/', PortalNoticeResearchListAPI.as_view()),
     path('scholarship/', PortalNoticeScholarshipListAPI.as_view()),
-    path('event/', PortalNoticeEventListAPI.as_view())    
+    path('event/', PortalNoticeEventListAPI.as_view())
 ]
