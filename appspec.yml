@@ -24,7 +24,7 @@ os: linux
 #   may cause associated deployments to fail.
 
 files:
-  - source: /
+  - source: /backend/crawling/scrapy
     destination: /home/ubuntu/scrapy
 
 # For deployments to Amazon Linux, Ubuntu Server, or RHEL instances,
