@@ -26,6 +26,9 @@ os: linux
 files:
   - source: /backend/crawling/scrapy
     destination: /home/ubuntu/scrapy
+  - source: /backend/crawling/selenium
+    destination: /home/ubuntu/selenium
+
 
 # For deployments to Amazon Linux, Ubuntu Server, or RHEL instances,
 #   you can specify a "permissions" 
