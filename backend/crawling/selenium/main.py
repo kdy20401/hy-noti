@@ -10,7 +10,7 @@ def job():
     except SystemExit:
         pass
 
-
+        
 # truncate all board notices (ex. portal, cse, bs,,)
 def job1():
     truncate_db_all()

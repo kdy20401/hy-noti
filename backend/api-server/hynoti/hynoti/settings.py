@@ -134,8 +134,17 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST API
+REST_SAFE_IP_LIST = [
+    '127.0.0.1',
+    '1.229.162.21', # my
+#     '',   # front-server IP
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_PERMISSION_CLASSES': (
+        'hynoti.slp.SafelistPermission',
+    )
 }
