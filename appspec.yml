@@ -24,6 +24,8 @@ os: linux
 #   may cause associated deployments to fail.
 
 files:
+  - source: /backend/api-server/hynoti
+    destination: /home/ubuntu/hynoti
   - source: /backend/crawling/scrapy
     destination: /home/ubuntu/scrapy
   - source: /backend/crawling/selenium
