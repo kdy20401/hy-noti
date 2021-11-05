@@ -26,7 +26,8 @@ os: linux
 files:
   - source: /backend/crawling/scrapy
     destination: /home/ubuntu/scrapy
-
+  - source: /backend/crawling/selenium
+    destination: /home/ubuntu/selenium
 
 
 
